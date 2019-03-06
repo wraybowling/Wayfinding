@@ -67,6 +67,7 @@ export default {
 
   .times{
     width:28vw;
+    padding-left:0.5rem;
   }
 
   .about{

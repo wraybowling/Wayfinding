@@ -45,7 +45,7 @@ async function getList(reservations = 1) {
 
   // How to fetch XML
   // https://stackoverflow.com/a/41009103
-  const url = `https://host6.evanced.info/richland/evanced/eventsxml.asp?lib=0&nd=1&alltime=1&roominfo=${reservations}&dm=exml`;
+  const url = `https://host6.evanced.info/richland/evanced/eventsxml.asp?lib=0&nd=15&alltime=1&roominfo=${reservations}&dm=exml`;
   let xmlString = await fetch(url).then(response => response.text());
 
   const options = { trim: true, explicitArray: false, emptyTag: undefined };
@@ -54,9 +54,10 @@ async function getList(reservations = 1) {
     if (error) {
       console.error("OMG", error);
     } else {
-      eventArray = result.event.item;
+      eventArray = [].concat(result.event.item);
     }
   });
+  
 
   // remove parking spaces
   eventArray = eventArray.filter(
@@ -65,11 +66,15 @@ async function getList(reservations = 1) {
   eventArray = eventArray.filter(
     event => event.location !== "Reserved Parking Spot 2"
   );
-
+  
+  console.log(eventArray.length, 'the event array', eventArray);
+  
   // clean the data so that it's actually useful
   eventArray.forEach(eventItem => {
     // the end date isn't set when it's the same as the start date
+   // if(eventItem)
     eventItem.enddate = eventItem.enddate || eventItem.date;
+    console.log('the end date', eventItem.enddate);
 
     // set start and end times for all day events to standard room hours 9am-8:45pm
     if (eventItem.time === "All Day") {
@@ -152,6 +157,8 @@ async function getList(reservations = 1) {
       return c;
     }
   });
+  
+  console.log('final array',eventArray);
 
   return eventArray;
 }
